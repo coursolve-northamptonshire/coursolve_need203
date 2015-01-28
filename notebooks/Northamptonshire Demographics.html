@@ -1826,7 +1826,7 @@ In&nbsp;[40]:
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="understanding-the-datasets">5 Understanding the datasets</h2>
+<h2 id="understanding-the-datasets">4 Understanding the datasets</h2>
 <p>Before we can analyse the datsets, we need to know what the datasets contain and how they are organized.The datasets are stored in the CSV text format, and we need to know the layouts of these CSV files. The <code>DataFetcher</code> helper class provides methods to make this process a bit less painful :-) :</p>
 <ul>
 <li><code>get_dataview_ids()</code> : Returns a list of <em>dataview ids</em>, which are unique integers that identify each dataset. These ids can be used as arguments to the <code>fetch_dataview_csv()</code> method described below to fetch the CSV file/s for a dataview.</li>
@@ -2323,7 +2323,7 @@ In&nbsp;[33]:
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="reading-analyzing-the-data">6 Reading &amp; Analyzing the data</h2>
+<h2 id="reading-analyzing-the-data">5 Reading &amp; Analyzing the data</h2>
 <p>Once the <code>DataFetcher</code> object has been intiialized, and the dataset layout is known to us, we can locate and download the CSV files we need. The CSV's can then be directly loaded into pandas <code>DataFrame</code>s for subsequent analysis. The <code>DataFetcher</code> class provides the following methods for downloading data from the server:</p>
 <ul>
 <li><code>download_dataviews(dir_name, geo_name, verbose=False)</code> : Fetches al the dataviews for the geographical unit specified <code>geo_name</code> (county, district etc.), and stores them under the <code>dir_name</code> folder, organized by theme &amp; subtheme. The <code>verbose</code> flag, if turned on, causes the method to spew out some status info as it downloads the data.</li>
@@ -3269,7 +3269,7 @@ RK5CYII=
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="conclusions">7 Conclusions</h2>
+<h2 id="conclusions">6 Conclusions</h2>
 <ul>
 <li><p>The demographics data provided by the Northamptonshire County provide a useful starting point for understanding the community in question. The way the data is organized on the website is of special interest to us, as a guide on how to organize the datasets we collect data from our investigations. This is important as the datasets we collect would originate from multiple datasources &amp; social media platforms (facebook, twitter, linkedin etc.), and would need to be collated across different facets (eg professional info, activities, education etc.). So, some prior thought on organizing these datasets would benefit us in the long run.</p></li>
 <li><p>The DataFetcher API provides a programmatic interface for accessing the datasets on the council website and downloading them to local storage. Going ahead, the DataFetcher (or something equivalent) could be integrated with social-media crawlers and database backend storage (e.g. a document store such as mongodb) to serve as a layer of storage abstraction for any analysis/ML tools we may need to build.</p></li>
