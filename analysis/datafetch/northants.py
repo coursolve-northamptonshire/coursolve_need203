@@ -23,7 +23,8 @@ class DataFetcher():
     '''
     def __init__(self):
         self.root_url  = 'http://www.northamptonshireanalysis.co.uk/'
-
+        
+        # geo id's and themes are few enough that we can just hard-code them.
         self.geo_ids = {
             'county' : 28,
             'district' : 46,
