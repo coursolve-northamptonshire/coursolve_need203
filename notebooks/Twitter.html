@@ -1874,11 +1874,6 @@ In&nbsp;[]:
 
 <span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">()</span>
 
-<span class="k">def</span> <span class="nf">get_nonce</span><span class="p">()</span> <span class="p">:</span> 
-    <span class="k">return</span> <span class="n">get_nonword</span><span class="p">(</span><span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">getrandbits</span><span class="p">(</span><span class="mi">32</span><span class="p">))))</span>
-
-<span class="k">def</span> <span class="nf">get_timestamp</span><span class="p">():</span>
-    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
 
 <span class="n">re_nonword</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&#39;[\W_]+&#39;</span><span class="p">)</span>
 <span class="n">re_28</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&#39;(\%28)&#39;</span><span class="p">)</span>
@@ -1888,7 +1883,17 @@ In&nbsp;[]:
 <span class="k">def</span> <span class="nf">get_nonword</span><span class="p">(</span><span class="n">orig</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">re_nonword</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">orig</span><span class="p">)</span>
 
+<span class="k">def</span> <span class="nf">get_nonce</span><span class="p">()</span> <span class="p">:</span> 
+    <span class="k">return</span> <span class="n">get_nonword</span><span class="p">(</span><span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">getrandbits</span><span class="p">(</span><span class="mi">32</span><span class="p">))))</span>
+
+<span class="k">def</span> <span class="nf">get_timestamp</span><span class="p">():</span>
+    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+
 <span class="k">def</span> <span class="nf">sub_escchars</span><span class="p">(</span><span class="n">orig</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39; No idea why, but the Twitter signature generator encodes brackets, comma etc. as %25XX instead of %XX, where XX</span>
+<span class="sd">    is the normal escape code for that non-word character.</span>
+<span class="sd">    This method replicates the same thing.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">return</span> <span class="n">re_29</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&#39;%2529&#39;</span><span class="p">,</span> <span class="n">re_2C</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&#39;%252C&#39;</span><span class="p">,</span> <span class="n">re_28</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&#39;%2528&#39;</span><span class="p">,</span> <span class="n">orig</span><span class="p">)))</span>
 
 <span class="k">def</span> <span class="nf">sign_request</span><span class="p">(</span><span class="n">consumer_secret</span><span class="p">,</span> 
@@ -1896,7 +1901,22 @@ In&nbsp;[]:
                 <span class="n">req_type</span><span class="p">,</span>
                 <span class="n">url</span><span class="p">,</span>
                 <span class="n">argmap</span><span class="p">):</span>
-    
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Steps for generating the signature:</span>
+<span class="sd">    1. Sort the keys in argmap alphabetically and join the key/value pairs in the format:</span>
+<span class="sd">        base_string &lt;- key1=value1&amp;key2=value2...&amp;keyN=valueN</span>
+<span class="sd">    2. This is the &#39;base string&#39;, %-encode this string.</span>
+<span class="sd">        base_string &lt;- %-encode(base_string)</span>
+<span class="sd">    3. %-encode the URL, and prepend it to the above base string with the &#39;&amp;&#39; separator as:</span>
+<span class="sd">        base_string &lt;- enc_url&amp;base_string</span>
+<span class="sd">    4. Prepend the Request Type (&quot;GET&quot;, &quot;POST&quot;) to the string above using &#39;&amp;&#39; as separator</span>
+<span class="sd">        base_string &lt;- req_type&amp;base_string</span>
+<span class="sd">    5. Generate the siging key as:</span>
+<span class="sd">        key &lt;- enc_consumer_secret&amp;enc_token_secret</span>
+<span class="sd">    where, enc_consumer_secret and enc_token_secret are %-encoded OAuth consumer &amp; token secrets respectively.</span>
+<span class="sd">    6. Generate the SHA1 HMAC by signing the base_string with the key.</span>
+<span class="sd">        signature &lt;- %-encode(base64(hmac(base_string,key)))</span>
+<span class="sd">    &#39;&#39;&#39;</span>
     <span class="c"># %-encode the secrets for the signing key, as per specification</span>
     <span class="n">enc_consumer_secret</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">quote_plus</span><span class="p">(</span><span class="n">consumer_secret</span><span class="p">)</span>
     <span class="n">enc_token_secret</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">quote_plus</span><span class="p">(</span><span class="n">token_secret</span><span class="p">)</span>
@@ -2019,7 +2039,7 @@ In&nbsp;[]:
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>The following generated command can be used to download filtered twitter statuses using th streaming API:</p>
 <blockquote>
-<p><code>$ curl --get https://stream.twitter.com/1.1/statuses/filter.json --data &#39;locations=-1.386293%2C51.985165%2C-0.282167%2C52.650010&#39; --header &#39;Authorization: OAuth oauth_consumer_key=&quot;J2zR6VITdMu6RKLITgjdic2lJ&quot;, oauth_nonce=&quot;MzA1OTUzNjg3MQ&quot;, oauth_signature=&quot;PooL0huM2TirKvTZCroKjeRtI5Q%3D&quot;, oauth_signature_method=&quot;HMAC-SHA1&quot;, oauth_timestamp=&quot;1423089806&quot;, oauth_token=&quot;116104048-9oOBItCtg3M6O81RIcWokGKC4nVMwxnLIIE7lslY&quot;, oauth_version=&quot;1.0&quot;&#39; --verbose</code></p>
+<p><code>$ curl --get https://stream.twitter.com/1.1/statuses/filter.json --data &#39;locations=-1.386293%2C51.985165%2C-0.282167%2C52.650010&#39; --header &#39;Authorization: OAuth oauth_consumer_key=&quot;XXXXXXXX&quot;, oauth_nonce=&quot;MzA1OTUzNjg3MQ&quot;, oauth_signature=&quot;PooL0huM2TirKvTZCroKjeRtI5Q%3D&quot;, oauth_signature_method=&quot;HMAC-SHA1&quot;, oauth_timestamp=&quot;1423089806&quot;, oauth_token=&quot;YYYYYYYY&quot;, oauth_version=&quot;1.0&quot;&#39; --verbose</code></p>
 </blockquote>
 </div>
 </div>
