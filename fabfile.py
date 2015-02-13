@@ -15,7 +15,6 @@ REPO_NAME = 'coursolve_need203'
 VIRTUALENV = 'northants'
 VIRTUALENVS_DIR = '/usr/share/virt_env'
 
-env.hosts = ['root@stockwatch.ws']
 env.code_repo = 'git@github.com:coursolve-northamptonshire/coursolve_need203.git'
 
 # Now the environment parameters, generated from the statics
