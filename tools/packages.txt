@@ -1,0 +1,7 @@
+# Packages to install
+python
+python-dev
+python-virtualenv
+libffi-dev
+libssl-dev
+git
