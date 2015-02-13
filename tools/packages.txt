@@ -6,4 +6,6 @@ libffi-dev
 libssl-dev
 libxml2-dev
 libxslt1-dev
+libpng-dev
+libfreetype6-dev
 git

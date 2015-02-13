@@ -122,11 +122,12 @@ def install_dependencies():
     ensure_virtualenv()
     with virtualenv(env.virtualenv):
         with cd(env.code_dir):
-            run_venv("easy_install -U distribute")
+            with settings(warn_only=True):
+                run_venv("easy_install -U distribute")
             run_venv("pip install -r tools/requirements.txt")
             run("sudo chown -Rf %s:%s %s" % (env.project_user, env.project_group, env.virtualenv))
 
-def ssh_keygen():
+def ssh_keygen(project_name):
     """ Generates a pair of DSA keys in root's .ssh directory.
     """
     ensure_virtualenv()
