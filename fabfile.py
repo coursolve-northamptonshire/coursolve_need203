@@ -15,13 +15,13 @@ REPO_NAME = 'coursolve_need203'
 VIRTUALENV = 'northants'
 VIRTUALENVS_DIR = '/usr/share/virt_env'
 
-env.hosts = ['root@50.116.12.111']
-env.code_repo = 'git@github.com:coursolve_northamptonshire/coursolve_need203.git'
+env.hosts = ['root@stockwatch.ws']
+env.code_repo = 'git@github.com:coursolve-northamptonshire/coursolve_need203.git'
 
 # Now the environment parameters, generated from the statics
 env.code_dir = '/'.join([DEPLOY_ROOT, PROJECT_NAME])
-env.project_dir = '/'.join([DEPLOY_ROOT, PROJECT_NAME + REPO_NAME])
-env.static_root = '/'.join([DEPLOY_ROOT, PROJECT_NAME + '/static/'])
+env.project_dir = '/'.join([DEPLOY_ROOT, PROJECT_NAME, REPO_NAME])
+env.static_root = '/'.join([DEPLOY_ROOT, PROJECT_NAME, 'static'])
 env.virtualenv = '/'.join([VIRTUALENVS_DIR, VIRTUALENV])
 
 #env.django_settings_module = 'climateexchange.settings'
@@ -66,15 +66,13 @@ def run_venv(command, **kwargs):
 def ensure_virtualenv():
     """ Ensure the virtualernv exists on the server 
     """
-    if exists(env.virtualenv):
-        return
-
-    with cd(env.code_dir):
-        run("sudo virtualenv --no-site-packages --python=%s %s" %
-            (PYTHON_BIN, env.virtualenv), )
-        run("sudo echo %s > %s/lib/%s/site-packages/projectsource.pth" %
-            (env.project_dir, env.virtualenv, PYTHON_BIN))
-        run("sudo chown -Rf %s:%s %s" % (env.project_user, env.project_group, env.virtualenv))
+    if not exists(env.virtualenv):
+        with cd(env.code_dir):
+            run("sudo virtualenv --no-site-packages --python=%s %s" %
+                (PYTHON_BIN, env.virtualenv), )    
+    run("sudo echo %s > %s/lib/%s/site-packages/projectsource.pth" %
+        (env.project_dir, env.virtualenv, PYTHON_BIN))
+    run("sudo chown -Rf %s:%s %s" % (env.project_user, env.project_group, env.virtualenv))
 
 def ensure_src_dir():
     """ Ensure the source code directory exists on the server
@@ -124,21 +122,35 @@ def install_dependencies():
     ensure_virtualenv()
     with virtualenv(env.virtualenv):
         with cd(env.code_dir):
+            run_venv("easy_install -U distribute")
             run_venv("pip install -r tools/requirements.txt")
             run("sudo chown -Rf %s:%s %s" % (env.project_user, env.project_group, env.virtualenv))
 
+def ssh_keygen():
+    """ Generates a pair of DSA keys in root's .ssh directory.
+    """
+    ensure_virtualenv()
+    with virtualenv(env.virtualenv):
+        with cd(env.code_dir):
+            if not exists("~/.ssh/id_dsa.pub"):
+                run("mkdir -p %s" % "~/.ssh/")
+                run("sudo mkdir -p %s" % "/root/.ssh/")
+                run("sudo ssh-keygen -q -t dsa -f '%s' -N ''" % '/root/.ssh/id_dsa')
+                #run("sudo cp -f /root/.ssh/id_dsa ~/.ssh/")
+                #run("sudo cp -f /root/.ssh/id_dsa.pub ~/.ssh/")
+                #run("sudo chown -Rf %s:%s ~/.ssh/" % (env.project_user, env.project_group))
 
 def packages():
     """ Generator to read in package names to install 
-    """
-    packages_file = open("tools/packages.txt", "r")
+    """    
     re_comment = re.compile(r"^\#.*$", re.I)
-    for line in packages_file.readline():
-        if re_comment.match(line):
-            continue
-        package_name = line.strip()
-        yield package_name
-    packages_file.close()
+    with open("tools/packages.txt", "r") as packages_file:
+        for line in packages_file:
+            if re_comment.match(line):
+                continue
+            package_name = line.strip()
+            yield package_name
+
 
 @task 
 def provision():
@@ -151,6 +163,8 @@ def provision():
     run("sudo apt-get --yes --force-yes install " + packages_str)
     #run("sudo apt-get --yes --force-yes build-dep python-numpy")
     ensure_src_dir()
+    with settings(warn_only=True):
+        ssh_keygen(env.project_name) 
             
 @task
 def deploy():

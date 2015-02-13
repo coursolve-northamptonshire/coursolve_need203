@@ -1,3 +1,4 @@
+distribute==0.7.3
 Fabric==1.10.1
 GitPython==0.3.6
 GraphLab-Create==1.2.1
@@ -19,7 +20,6 @@ colorama==0.2.5
 cryptography==0.7.2
 cssselect==0.9.1
 decorator==3.4.0
-distribute==0.7.3
 docutils==0.12
 ecdsa==0.13
 enum34==1.0.4
