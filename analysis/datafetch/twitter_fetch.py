@@ -104,7 +104,7 @@ class OAuthSigner(object):
         # The signature
         return urllib.quote_plus(hashed_b64)
 
-def create_datafetcher(settings_file):
+def create_datafetcher_file(settings_file):
     ''' Create DataFetcher from settings file
     '''
     settings_fp = None
@@ -115,6 +115,11 @@ def create_datafetcher(settings_file):
         if not settings_fp is None:
             settings_fp.close()
     return DataFetcher(settings)
+
+def create_datafetcher(twitter_settings):
+    ''' Create DataFetcher from settings file
+    '''
+    return DataFetcher(twitter_settings)
 
 class DataFetcher(object):
     ''' DataFetcher class for twitter data collection
