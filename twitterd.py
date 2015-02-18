@@ -49,7 +49,7 @@ class Twitterd(object):
         parser.add_argument('--outdir', metavar='OUTDIR', type=str, nargs=1,
                             required=True, help='Output Directory')
         parser.add_argument('--max-time', metavar='SECONDS', type=int, nargs='?',
-                            required=True, help='Number of Seconds to run before termination')
+                            required=False, help='Number of Seconds to run before termination')
         parser.add_argument('--cmd', metavar='CMD', choices=self.CMDS, type=str, nargs=1,
                             required=True, help='Command Name')
         parser.add_argument('--settings', metavar='SETTINGSFILE', type=str, nargs=1,
