@@ -62,7 +62,7 @@ class Twitterd(object):
     def main(self):
         """ Main entry point for daemon
         """
-        pdb.set_trace()
+        #pdb.set_trace()
         LOG.info("starting up...")
         try:
             self.download_data()

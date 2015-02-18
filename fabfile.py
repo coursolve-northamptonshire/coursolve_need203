@@ -109,10 +109,10 @@ def push_sources():
         run(' '.join(['sudo git pull origin', CODE_BRANCH]))
         run(' '.join(['sudo git checkout', CODE_BRANCH]))
         #run('sudo cp -f climateexchange/settings/deploy.py climateexchange/settings/local.py')
-        run("sudo chown -Rf %s:%s %s" % (env.project_user, env.project_group, env.code_dir))
         put(local_path=env.twitterd_settings, 
             remote_path=env.code_dir)
-
+        run("sudo chown -Rf %s:%s %s" % (env.project_user, env.project_group, env.code_dir))
+        
 def fetch_stop():
     """ Stop data fetching
     """
