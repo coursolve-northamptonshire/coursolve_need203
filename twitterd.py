@@ -131,7 +131,11 @@ def main():
         daemon.start()
         LOG.error("Exiting")
         """
-        entry()
+        try:
+            entry()
+        except:
+            LOG.exception("Fatal Exception")
+            raise
     elif daemon_cmd == "stop":
         pass 
     elif daemon_cmd == "restart":
