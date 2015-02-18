@@ -2,7 +2,7 @@
 """
 from fabric.api import cd, local, settings, env, prefix, run, task
 from fabric.contrib.files import exists
-from fabric.operations import _prefix_commands, _prefix_env_vars
+from fabric.operations import _prefix_commands, _prefix_env_vars, put
 import posixpath
 import re
 
@@ -19,9 +19,10 @@ env.code_repo = 'git@github.com:coursolve-northamptonshire/coursolve_need203.git
 
 # Now the environment parameters, generated from the statics
 env.code_dir = '/'.join([DEPLOY_ROOT, PROJECT_NAME])
-env.project_dir = '/'.join([DEPLOY_ROOT, PROJECT_NAME, REPO_NAME])
+env.project_dir = env.code_dir #'/'.join([DEPLOY_ROOT, PROJECT_NAME, REPO_NAME])
 env.static_root = '/'.join([DEPLOY_ROOT, PROJECT_NAME, 'static'])
 env.virtualenv = '/'.join([VIRTUALENVS_DIR, VIRTUALENV])
+env.twitterd_settings = '/home/anshuman/.twitter_api_keys.json'
 
 #env.django_settings_module = 'climateexchange.settings'
 
@@ -109,6 +110,8 @@ def push_sources():
         run(' '.join(['sudo git checkout', CODE_BRANCH]))
         #run('sudo cp -f climateexchange/settings/deploy.py climateexchange/settings/local.py')
         run("sudo chown -Rf %s:%s %s" % (env.project_user, env.project_group, env.code_dir))
+        put(local_path=env.twitterd_settings, 
+            remote_path=env.code_dir)
 
 def fetch_stop():
     """ Stop data fetching
