@@ -160,7 +160,7 @@ def provision():
     run("sudo apt-get update")
     # TO DO: get the list of packages from a text file.
     packages_str = " ".join([p for p in packages()])
-    run("sudo apt-get --yes --force-yes build-dep numpy scipy")
+    run("sudo apt-get --yes --force-yes build-dep python-numpy python-scipy")
     run("sudo apt-get --yes --force-yes install " + packages_str)
     #run("sudo apt-get --yes --force-yes build-dep python-numpy")
     ensure_src_dir()
