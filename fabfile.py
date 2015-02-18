@@ -111,8 +111,9 @@ def push_sources():
         #run('sudo cp -f climateexchange/settings/deploy.py climateexchange/settings/local.py')
         put(local_path=env.twitterd_settings, 
             remote_path=env.code_dir)
+        run("cp settings-deploy.py settings.py")
         run("sudo chown -Rf %s:%s %s" % (env.project_user, env.project_group, env.code_dir))
-        
+
 def fetch_stop():
     """ Stop data fetching
     """

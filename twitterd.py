@@ -9,6 +9,8 @@ import analysis.datafetch.twitter_fetch as tw
 import logging
 import logging.config
 import json
+import settings
+
 LOG = logging.getLogger(__name__)
 
 class Twitterd(object):
@@ -21,9 +23,9 @@ class Twitterd(object):
     def __init__(self, args):
         self.init_args()
         self.args = self.get_args(args)
-        print(self.args)
+        #print(self.args)
         self.settings = self.read_settings(self.args.settings[0])
-        self.init_logging(self.settings["log"])
+        self.init_logging(settings.LOGGING)
         self.fetcher = tw.create_datafetcher(self.settings["twitter"])
 
         self.cmd_map = {
