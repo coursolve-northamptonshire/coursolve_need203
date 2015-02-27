@@ -14,25 +14,26 @@ D_LOG = {
     },
     'handlers': {
         'default': {
-            'level':'INFO',    
-            'class':'logging.StreamHandler',
-        },  
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+        },
     },
     'loggers': {
-        '': {                  
-            'handlers': ['default'],        
-            'level': 'INFO',  
-            'propagate': True  
-        },
-        'analysis.datafetch.twitter_fetch': { 
+        '': {
             'handlers': ['default'],
-            'level': 'INFO',  
-            'propagate': True 
+            'level': 'INFO',
+            'propagate': True,
         },
-    }
+        'analysis.datafetch.twitter_fetch': {
+            'handlers': ['default'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
 }
 
-logging.config.dictConfig(D_LOG)  
+logging.config.dictConfig(D_LOG)
+
 
 class TestTwitterProcessor(unittest.TestCase):
 
@@ -46,5 +47,3 @@ class TestTwitterProcessor(unittest.TestCase):
             print(dataframe)
             user_frame = dataframe.groupby("user")
             print(user_frame.groups)
-
-
